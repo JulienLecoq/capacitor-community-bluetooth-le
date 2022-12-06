@@ -120,13 +120,13 @@ class BluetoothLe : Plugin() {
         if (granted.all { it }) {
             runInitialization(call)
         } else {
-            call.reject("Permission denied.")
+            call.reject("BLE permission denied")
         }
     }
 
     private fun runInitialization(call: PluginCall) {
         if (!activity.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            call.reject("BLE is not supported.")
+            call.reject("BLE unsupported")
             return
         }
 
@@ -134,7 +134,7 @@ class BluetoothLe : Plugin() {
                 as BluetoothManager).adapter
 
         if (bluetoothAdapter == null) {
-            call.reject("BLE is not available.")
+            call.reject("BLE unavailable")
             return
         }
         call.resolve()
