@@ -7,6 +7,7 @@ import CoreBluetooth
 let CONNECTION_TIMEOUT: Double = 10
 let DEFAULT_TIMEOUT: Double = 5
 
+
 @objc(BluetoothLe)
 public class BluetoothLe: CAPPlugin {
     typealias BleDevice = [String: Any]
@@ -22,13 +23,45 @@ public class BluetoothLe: CAPPlugin {
     }
 
     @objc func initialize(_ call: CAPPluginCall) {
-        self.deviceManager = DeviceManager(self.bridge?.viewController, self.displayStrings, {(success, message) -> Void in
+        let withAlert = call.getBool("withAlert")
+        self.deviceManager = DeviceManager(self.bridge?.viewController, self.displayStrings, withAlert, {(success, message) -> Void in
             if success {
                 call.resolve()
             } else {
                 call.reject(message)
             }
         })
+    }
+    
+    @objc public override func requestPermissions(_ call: CAPPluginCall) {
+        self.deviceManager = DeviceManager(self.bridge?.viewController, self.displayStrings, nil, {(success, message) -> Void in
+            if success {
+                let response = Permission.checkPermissions(self.deviceManager)
+                call.resolve(response)
+            } else {
+                call.reject(message)
+            }
+        })
+    }
+    
+    @objc public override func checkPermissions(_ call: CAPPluginCall) {
+        let status = Permission.checkPermissions(self.deviceManager)
+        call.resolve(status)
+    }
+    
+    @objc func hasPermissions(_ call: CAPPluginCall) {
+        let hasPerm = Permission.hasPermissions()
+        call.resolve(["hasPermissions": hasPerm])
+    }
+    
+    @objc func isInitialized(_ call: CAPPluginCall) {
+        guard let deviceManager = self.deviceManager else {
+            call.resolve(["value": false])
+            return
+        }
+
+        let isInit = deviceManager.isInitialized()
+        call.resolve(["value": isInit])
     }
 
     @objc func isEnabled(_ call: CAPPluginCall) {

@@ -23,6 +23,8 @@ import type {
   ScanResultInternal,
   WriteOptions,
   WriteDescriptorOptions,
+  HasPermissionStatus,
+  PermissionStatus,
 } from './definitions';
 import { runWithTimeout } from './timeout';
 
@@ -41,6 +43,22 @@ export class BluetoothLeWeb extends WebPlugin implements BluetoothLePlugin {
     if (!isAvailable) {
       throw this.unavailable('No Bluetooth radio available.');
     }
+  }
+
+  isInitialized(): Promise<BooleanResult> {  
+    throw this.unimplemented('Method not implemented.')
+  }
+
+  hasPermissions(): Promise<HasPermissionStatus> {    
+    throw this.unimplemented('Method not implemented.')
+  }
+  
+  checkPermissions(): Promise<PermissionStatus> {
+    throw this.unimplemented('Method not implemented.')
+  }
+
+  requestPermissions(): Promise<PermissionStatus> {
+    throw this.unimplemented('Method not implemented.')
   }
 
   async isEnabled(): Promise<BooleanResult> {

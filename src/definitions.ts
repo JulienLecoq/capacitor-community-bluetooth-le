@@ -12,6 +12,9 @@ export interface InitializeOptions {
    * @default false
    */
   androidNeverForLocation?: boolean;
+
+  // Only available for iOS
+  withAlert?: boolean
 }
 
 export interface RequestBleDeviceOptions {
@@ -242,6 +245,24 @@ export interface ScanResult {
   rawAdvertisement?: DataView;
 }
 
+export interface HasPermissionStatus {
+    /**
+     * Bool indicating if all the permissions of the bluetooth module have been granted.
+     */
+    hasPermissions: boolean
+}
+
+export interface PermissionStatus {
+    /**
+     * Scan permission state.
+     */
+    bluetoothScan: PermissionState,
+    /**
+     * Connect permission state.
+     */
+    bluetoothConnect: PermissionState,
+}
+
 export interface BluetoothLePlugin {
   initialize(options?: InitializeOptions): Promise<void>;
   isEnabled(): Promise<BooleanResult>;
@@ -275,4 +296,8 @@ export interface BluetoothLePlugin {
   writeDescriptor(options: WriteDescriptorOptions & TimeoutOptions): Promise<void>;
   startNotifications(options: ReadOptions): Promise<void>;
   stopNotifications(options: ReadOptions): Promise<void>;
+  isInitialized(): Promise<BooleanResult>
+  hasPermissions(): Promise<HasPermissionStatus>
+  checkPermissions(): Promise<PermissionStatus>
+  requestPermissions(): Promise<PermissionStatus>
 }

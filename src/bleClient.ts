@@ -13,6 +13,7 @@ import type {
   ScanResult,
   ScanResultInternal,
   TimeoutOptions,
+  PermissionStatus
 } from './definitions';
 import { BluetoothLe } from './plugin';
 import { getQueue } from './queue';
@@ -268,6 +269,30 @@ export interface BleClientInterface {
    * @param characteristic UUID of the characteristic (see [UUID format](#uuid-format))
    */
   stopNotifications(deviceId: string, service: string, characteristic: string): Promise<void>;
+
+  /**
+   * Reports whether Bluetooth is initialized.
+   * Not available on **web**.
+   */
+  isInitialized(): Promise<boolean>;
+
+  /**
+   * Reports whether Bluetooth permissions have been granted.
+   * Not available on **web**.
+   */
+  hasPermissions(): Promise<boolean>;
+
+  /**
+   * Reports whether the state of the permissions.
+   * Not available on **web**.
+   */
+  checkPermissions(): Promise<PermissionStatus>;
+  
+  /**
+   * Request the permissions.
+   * Not available on **web**.
+   */
+  requestPermissions(): Promise<PermissionStatus>;
 }
 
 class BleClientClass implements BleClientInterface {
@@ -281,6 +306,40 @@ class BleClientClass implements BleClientInterface {
 
   disableQueue() {
     this.queue = getQueue(false);
+  }
+
+  async requestPermissions(): Promise<PermissionStatus> {
+    const permissions = await this.queue(() => {
+        return BluetoothLe.requestPermissions()
+    })
+
+    return permissions
+  }
+
+  async checkPermissions(): Promise<PermissionStatus> {
+    const permissions = await this.queue(() => {
+        return BluetoothLe.checkPermissions()
+    })
+
+    return permissions
+  }
+
+  async hasPermissions(): Promise<boolean> {
+    const permissions = await this.queue(async () => {
+        const result = await BluetoothLe.hasPermissions()
+        return result.hasPermissions
+    })
+
+    return permissions
+  }
+
+  async isInitialized(): Promise<boolean> {
+    const initialized = await this.queue(async () => {
+        const result = await BluetoothLe.isInitialized()
+        return result.value
+    })
+
+    return initialized
   }
 
   async initialize(options?: InitializeOptions): Promise<void> {

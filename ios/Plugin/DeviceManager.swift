@@ -1,12 +1,20 @@
 import Foundation
+import Capacitor
 import CoreBluetooth
+
+enum BleErrors: String {
+    case powerdOff = "BLE powered off"
+    case unauthorized = "BLE permission denied"
+    case unsupported = "BLE unsupported"
+    case alreadyScanning = "Already scanning. Stopping now."
+}
 
 class DeviceManager: NSObject, CBCentralManagerDelegate {
     typealias Callback = (_ success: Bool, _ message: String) -> Void
     typealias StateReceiver = (_ enabled: Bool) -> Void
     typealias ScanResultCallback = (_ device: Device, _ advertisementData: [String: Any], _ rssi: NSNumber) -> Void
 
-    private var centralManager: CBCentralManager!
+    var centralManager: CBCentralManager!
     private var viewController: UIViewController?
     private var displayStrings: [String: String]!
     private var callbackMap = [String: Callback]()
@@ -21,12 +29,19 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
     private var shouldShowDeviceList = false
     private var allowDuplicates = false
 
-    init(_ viewController: UIViewController?, _ displayStrings: [String: String], _ callback: @escaping Callback) {
+    init(_ viewController: UIViewController?, _ displayStrings: [String: String], _ withAlert: Bool?, _ callback: @escaping Callback) {
         super.init()
         self.viewController = viewController
         self.displayStrings = displayStrings
         self.callbackMap["initialize"] = callback
-        self.centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
+        
+        if withAlert != nil && withAlert == true {
+            self.centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
+        } else {
+            self.centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main, options: [
+                "CBCentralManagerOptionShowPowerAlertKey": false
+            ])
+        }
     }
 
     func setDisplayStrings(_ displayStrings: [String: String]) {
@@ -38,21 +53,27 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
         let initializeKey = "initialize"
         switch central.state {
         case .poweredOn:
+            print("Powered on")
             self.resolve(initializeKey, "BLE powered on")
             self.emitState(enabled: true)
         case .poweredOff:
+            print("Powered off")
             self.stopScan()
-            self.resolve(initializeKey, "BLE powered off")
+            self.reject(initializeKey, BleErrors.powerdOff.rawValue)
             self.emitState(enabled: false)
         case .resetting:
+            print("Resetting")
             self.emitState(enabled: false)
         case .unauthorized:
-            self.reject(initializeKey, "BLE permission denied")
+            print("Unauthorized")
+            self.reject(initializeKey, BleErrors.unauthorized.rawValue)
             self.emitState(enabled: false)
         case .unsupported:
-            self.reject(initializeKey, "BLE unsupported")
+            print("Unsupported")
+            self.reject(initializeKey, BleErrors.unsupported.rawValue)
             self.emitState(enabled: false)
         case .unknown:
+            print("Unknown")
             self.emitState(enabled: false)
         default: break
         }
@@ -60,6 +81,10 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
 
     func isEnabled() -> Bool {
         return self.centralManager.state == CBManagerState.poweredOn
+    }
+    
+    func isInitialized() -> Bool {
+        return self.centralManager.state != CBManagerState.unknown
     }
 
     func registerStateReceiver( _ stateReceiver: @escaping StateReceiver) {
@@ -115,7 +140,7 @@ class DeviceManager: NSObject, CBCentralManagerDelegate {
             }
         } else {
             self.stopScan()
-            self.reject("startScanning", "Already scanning. Stopping now.")
+            self.reject("startScanning", BleErrors.alreadyScanning.rawValue)
         }
     }
 
