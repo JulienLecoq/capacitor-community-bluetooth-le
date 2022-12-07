@@ -68,7 +68,7 @@ class PermissionManager(private val bridge: Bridge) {
     }
 
     private fun hasPermission(permissionId: String): Boolean {
-        val hasPerm = ContextCompat.checkSelfPermission(this.bridge.getContext(), permissionId)
+        val hasPerm = ContextCompat.checkSelfPermission(this.bridge.context, permissionId)
         return hasPerm == PackageManager.PERMISSION_GRANTED
     }
 

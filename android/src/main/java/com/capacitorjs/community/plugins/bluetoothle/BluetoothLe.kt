@@ -74,6 +74,20 @@ class BluetoothLe : Plugin() {
         ) { result ->
             this.isEnabled(result.call)
         }
+        this.registerBluetoothStateReceiver()
+    }
+
+    private fun registerBluetoothStateReceiver() {
+        val intentF = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+        val bluetoothStateReceiver = BluetoothStateReceiver(this)
+        this.activity.applicationContext.registerReceiver(bluetoothStateReceiver, intentF)
+
+        // private val bluetoothStateReceiver = BluetoothStateReceiver(this)
+        // this.getActivity().getApplicationContext().registerReceiver(this.bluetoothStateReceiver, intentF)
+    }
+
+    fun publicNotifyListeners(eventName: String?, data: JSObject?) {
+        this.notifyListeners(eventName, data, false)
     }
 
     @PluginMethod
