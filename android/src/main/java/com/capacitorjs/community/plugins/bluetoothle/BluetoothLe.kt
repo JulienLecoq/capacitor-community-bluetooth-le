@@ -16,13 +16,13 @@ import android.os.Build
 import android.os.ParcelUuid
 import android.provider.Settings.*
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
 import androidx.core.location.LocationManagerCompat
 import com.getcapacitor.*
 import com.getcapacitor.annotation.CapacitorPlugin
 import com.getcapacitor.annotation.Permission
 import com.getcapacitor.annotation.PermissionCallback
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 @CapacitorPlugin(
@@ -30,35 +30,18 @@ import kotlin.collections.ArrayList
     permissions = [
         Permission(
             strings = [
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-            ], alias = "ACCESS_COARSE_LOCATION"
+                Manifest.permission.BLUETOOTH_SCAN,
+            ], alias = PermissionManager.BLUETOOTH_SCAN_ALIAS
+        ),
+        Permission(
+            strings = [
+                Manifest.permission.BLUETOOTH_CONNECT,
+            ], alias = PermissionManager.BLUETOOTH_CONNECT_ALIAS
         ),
         Permission(
             strings = [
                 Manifest.permission.ACCESS_FINE_LOCATION,
-            ], alias = "ACCESS_FINE_LOCATION"
-        ),
-        Permission(
-            strings = [
-                Manifest.permission.BLUETOOTH,
-            ], alias = "BLUETOOTH"
-        ),
-        Permission(
-            strings = [
-                Manifest.permission.BLUETOOTH_ADMIN,
-            ], alias = "BLUETOOTH_ADMIN"
-        ),
-        Permission(
-            strings = [
-                // Manifest.permission.BLUETOOTH_SCAN
-                "android.permission.BLUETOOTH_SCAN",
-            ], alias = "BLUETOOTH_SCAN"
-        ),
-        Permission(
-            strings = [
-                // Manifest.permission.BLUETOOTH_ADMIN
-                "android.permission.BLUETOOTH_CONNECT",
-            ], alias = "BLUETOOTH_CONNECT"
+            ], alias = PermissionManager.ACCESS_FINE_LOCATION_ALIAS
         ),
     ]
 )
@@ -77,40 +60,30 @@ class BluetoothLe : Plugin() {
     private var deviceMap = HashMap<String, Device>()
     private var deviceScanner: DeviceScanner? = null
     private var displayStrings: DisplayStrings? = null
-    private var aliases: Array<String> = arrayOf()
+    private lateinit var permissionManager: PermissionManager
+
+    private val REQUEST_ENABLE_BT = 999
+
+    private lateinit var activityResultLauncher: ActivityResultLauncher<CapStartActivityParam>
 
     override fun load() {
         displayStrings = getDisplayStrings()
+        this.permissionManager = PermissionManager(this.bridge)
+        this.activityResultLauncher = this.bridge.registerForActivityResult(
+            CapActivityResultContract(),
+        ) { result ->
+            this.isEnabled(result.call)
+        }
     }
 
     @PluginMethod
     fun initialize(call: PluginCall) {
-        // Build.VERSION_CODES.S = 31
-        if (Build.VERSION.SDK_INT >= 31) {
-            val neverForLocation = call.getBoolean("androidNeverForLocation", false) as Boolean
-            aliases = if (neverForLocation) {
-                arrayOf(
-                    "BLUETOOTH_SCAN",
-                    "BLUETOOTH_CONNECT",
-                )
-            } else {
-                arrayOf(
-                    "BLUETOOTH_SCAN",
-                    "BLUETOOTH_CONNECT",
-                    "ACCESS_FINE_LOCATION",
-                )
-            }
-        } else {
-            aliases = arrayOf(
-                "ACCESS_COARSE_LOCATION",
-                "ACCESS_FINE_LOCATION",
-                "BLUETOOTH",
-                "BLUETOOTH_ADMIN",
-            )
-        }
-        requestPermissionForAliases(aliases, call, "checkPermission")
+    //    val aliases = this.permissionManager.permissionAliases(call)
+    //    requestPermissionForAliases(aliases, call, "checkPermission")
+        this.runInitialization(call)
     }
 
+    /*
     @PermissionCallback
     private fun checkPermission(call: PluginCall) {
         val granted: List<Boolean> = aliases.map { alias ->
@@ -122,6 +95,102 @@ class BluetoothLe : Plugin() {
         } else {
             call.reject("BLE permission denied")
         }
+    }*/
+
+    @PluginMethod
+    fun requestBluetoothConnectPermission(call: PluginCall) {
+        this.requestPermissionForAlias(PermissionManager.BLUETOOTH_CONNECT_ALIAS, call, "onBluetoothConnectRequestPermissionResult")
+    }
+
+    @PermissionCallback
+    fun onBluetoothConnectRequestPermissionResult(call: PluginCall) {
+        val res = getPermissionState(PermissionManager.BLUETOOTH_CONNECT_ALIAS).toString()
+        call.resolve(toValueResult(res))
+    }
+
+    @PluginMethod
+    fun requestBluetoothScanPermission(call: PluginCall) {
+        this.requestPermissionForAlias(PermissionManager.BLUETOOTH_SCAN_ALIAS, call, "onBluetoothScanRequestPermissionResult")
+    }
+
+    @PermissionCallback
+    fun onBluetoothScanRequestPermissionResult(call: PluginCall) {
+        val res = getPermissionState(PermissionManager.BLUETOOTH_SCAN_ALIAS).toString()
+        call.resolve(toValueResult(res))
+    }
+
+    @PluginMethod
+    fun requestAccessFineLocationPermission(call: PluginCall) {
+        this.requestPermissionForAlias(PermissionManager.ACCESS_FINE_LOCATION_ALIAS, call, "onAccessFineLocationRequestPermissionResult")
+    }
+
+    @PermissionCallback
+    fun onAccessFineLocationRequestPermissionResult(call: PluginCall) {
+        val res = getPermissionState(PermissionManager.ACCESS_FINE_LOCATION_ALIAS).toString()
+        call.resolve(toValueResult(res))
+    }
+
+    @PluginMethod
+    fun checkBluetoothScanPermission(call: PluginCall) {
+        val res = getPermissionState(PermissionManager.BLUETOOTH_SCAN_ALIAS).toString()
+        call.resolve(toValueResult(res))
+    }
+
+    @PluginMethod
+    fun checkBluetoothConnectPermission(call: PluginCall) {
+        val res = getPermissionState(PermissionManager.BLUETOOTH_CONNECT_ALIAS).toString()
+        call.resolve(toValueResult(res))
+    }
+
+    @PluginMethod
+    fun checkAccessFineLocationPermission(call: PluginCall) {
+        val res = getPermissionState(PermissionManager.ACCESS_FINE_LOCATION_ALIAS).toString()
+        call.resolve(toValueResult(res))
+    }
+
+    @PluginMethod
+    fun hasBluetoothScanPermission(call: PluginCall) {
+        val hasPerm = this.permissionManager.hasBluetoothScanPermission()
+        val result = this.permissionManager.toPermissionObject(hasPerm)
+        call.resolve(result)
+    }
+
+    @PluginMethod
+    fun hasBluetoothConnectPermission(call: PluginCall) {
+        val hasPerm = this.permissionManager.hasBluetoothConnectPermission()
+        val result = this.permissionManager.toPermissionObject(hasPerm)
+        call.resolve(result)
+    }
+
+    @PluginMethod
+    fun hasAccessFineLocationPermission(call: PluginCall) {
+        val hasPerm = this.permissionManager.hasAccessFineLocationPermission()
+        val result = this.permissionManager.toPermissionObject(hasPerm)
+        call.resolve(result)
+    }
+
+    @PluginMethod
+    override fun checkPermissions(call: PluginCall) {
+        super.checkPermissions(call)
+    }
+
+    @PluginMethod
+    fun hasPermissions(call: PluginCall) {
+        val hasPerms = this.permissionManager.hasPermissions()
+        val result = this.permissionManager.toPermissionsObject(hasPerms)
+        call.resolve(result)
+    }
+
+    @PluginMethod
+    override fun requestPermissions(call: PluginCall) {
+        val aliases = this.permissionManager.permissionAliases(call)
+        requestPermissionForAliases(aliases, call, "checkPermissions")
+    }
+
+    @PluginMethod
+    fun isInitialized(call: PluginCall) {
+        val isInit = this.bluetoothAdapter !== null
+        call.resolve(toValueResult(isInit))
     }
 
     private fun runInitialization(call: PluginCall) {
@@ -137,6 +206,7 @@ class BluetoothLe : Plugin() {
             call.reject("BLE unavailable")
             return
         }
+
         call.resolve()
     }
 
@@ -144,15 +214,38 @@ class BluetoothLe : Plugin() {
     fun isEnabled(call: PluginCall) {
         assertBluetoothAdapter(call) ?: return
         val enabled = bluetoothAdapter?.isEnabled == true
-        val result = JSObject()
-        result.put("value", enabled)
-        call.resolve(result)
+        call.resolve(toValueResult(enabled))
     }
 
     @PluginMethod
     fun enable(call: PluginCall) {
         assertBluetoothAdapter(call) ?: return
-        val result = bluetoothAdapter?.enable()
+
+        if (!this.permissionManager.hasBluetoothConnectPermission()) {
+            call.reject("BLE connect permission denied")
+            return
+        }
+
+        if (!this.bluetoothAdapter!!.isEnabled()) {
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            val param = CapStartActivityParam(call, enableBtIntent)
+            activityResultLauncher.launch(param)
+            return
+        }
+
+        call.resolve(toValueResult(true))
+    }
+
+    @PluginMethod
+    fun forceEnable(call: PluginCall) {
+        assertBluetoothAdapter(call) ?: return
+
+        if (!this.permissionManager.hasBluetoothConnectPermission()) {
+            call.reject("BLE connect permission denied")
+            return
+        }
+
+        val result = this.bluetoothAdapter?.enable()
         if (result != true) {
             call.reject("Enable failed.")
             return
@@ -160,9 +253,26 @@ class BluetoothLe : Plugin() {
         call.resolve()
     }
 
+    /*
+    protected fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == this.REQUEST_ENABLE_BT) {
+            if (resultCode == RESULT_OK) {
+                // Bluetooth is now enabled
+            } else {
+                // User did not enable Bluetooth or an error occurred
+            }
+        }
+    }*/
+
     @PluginMethod
     fun disable(call: PluginCall) {
         assertBluetoothAdapter(call) ?: return
+
+        if (!this.permissionManager.hasBluetoothConnectPermission()) {
+            call.reject("BLE connect permission denied")
+            return
+        }
+
         val result = bluetoothAdapter?.disable()
         if (result != true) {
             call.reject("Disable failed.")
