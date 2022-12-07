@@ -1,5 +1,6 @@
+import type { PluginListenerHandle } from '@capacitor/core';
 import type { DisplayStrings } from './config';
-import type { BleDevice, BleService, InitializeOptions, RequestBleDeviceOptions, ScanResult, TimeoutOptions, PermissionStatus, PermissionState } from './definitions';
+import type { BleDevice, BleService, Data, InitializeOptions, ReadResult, RequestBleDeviceOptions, ScanResult, ScanResultInternal, TimeoutOptions, PermissionStatus, PermissionState, IsActiveResult, BooleanResult } from './definitions';
 export interface BleClientInterface {
     /**
      * Initialize Bluetooth Low Energy (BLE). If it fails, BLE might be unavailable on this device.
@@ -225,6 +226,10 @@ export interface BleClientInterface {
     requestBluetoothConnectPermission(): Promise<PermissionState>;
     requestBluetoothScanPermission(): Promise<PermissionState>;
     requestAccessFineLocationPermission(): Promise<PermissionState>;
+    addListener(eventName: 'onEnabledChanged', listenerFunc: (result: BooleanResult) => void): PluginListenerHandle;
+    addListener(eventName: 'bluetoothStateChange', listenerFunc: (result: IsActiveResult) => void): PluginListenerHandle;
+    addListener(eventName: string, listenerFunc: (event: ReadResult) => void): PluginListenerHandle;
+    addListener(eventName: 'onScanResult', listenerFunc: (result: ScanResultInternal) => void): PluginListenerHandle;
 }
 declare class BleClientClass implements BleClientInterface {
     private scanListener;
@@ -232,6 +237,10 @@ declare class BleClientClass implements BleClientInterface {
     private queue;
     enableQueue(): void;
     disableQueue(): void;
+    addListener(eventName: 'onEnabledChanged', listenerFunc: (result: BooleanResult) => void): PluginListenerHandle;
+    addListener(eventName: 'bluetoothStateChange', listenerFunc: (result: IsActiveResult) => void): PluginListenerHandle;
+    addListener(eventName: string, listenerFunc: (event: ReadResult) => void): PluginListenerHandle;
+    addListener(eventName: 'onScanResult', listenerFunc: (result: ScanResultInternal<Data>) => void): PluginListenerHandle;
     hasBluetoothPermission(): Promise<boolean>;
     hasBluetoothScanPermission(): Promise<boolean>;
     hasBluetoothConnectPermission(): Promise<boolean>;

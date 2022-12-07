@@ -256,6 +256,9 @@ export interface PermissionStatus {
 export interface PermissionStateResult {
     value: PermissionState;
 }
+export interface IsActiveResult {
+    isActive: boolean;
+}
 export interface BluetoothLePlugin {
     initialize(options?: InitializeOptions): Promise<void>;
     isEnabled(): Promise<BooleanResult>;
@@ -274,8 +277,10 @@ export interface BluetoothLePlugin {
     getDevices(options: GetDevicesOptions): Promise<GetDevicesResult>;
     getConnectedDevices(options: GetConnectedDevicesOptions): Promise<GetDevicesResult>;
     addListener(eventName: 'onEnabledChanged', listenerFunc: (result: BooleanResult) => void): PluginListenerHandle;
+    addListener(eventName: 'bluetoothStateChange', listenerFunc: (result: IsActiveResult) => void): PluginListenerHandle;
     addListener(eventName: string, listenerFunc: (event: ReadResult) => void): PluginListenerHandle;
     addListener(eventName: 'onScanResult', listenerFunc: (result: ScanResultInternal) => void): PluginListenerHandle;
+    removeAllListeners(): Promise<void>;
     connect(options: DeviceIdOptions & TimeoutOptions): Promise<void>;
     createBond(options: DeviceIdOptions): Promise<void>;
     isBonded(options: DeviceIdOptions): Promise<BooleanResult>;

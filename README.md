@@ -94,6 +94,10 @@ Below is an index of all the methods available.
 - [`requestBluetoothConnectPermission()`](#requestbluetoothconnectpermission)
 - [`requestBluetoothScanPermission()`](#requestbluetoothscanpermission)
 - [`requestAccessFineLocationPermission()`](#requestaccessfinelocationpermission)
+- [`addListener('onEnabledChanged', ...)`](#addlisteneronenabledchanged)
+- [`addListener('bluetoothStateChange', ...)`](#addlistenerbluetoothstatechange)
+- [`addListener(string, ...)`](#addlistenerstring)
+- [`addListener('onScanResult', ...)`](#addlisteneronscanresult)
 - [Interfaces](#interfaces)
 - [Type Aliases](#type-aliases)
 - [Enums](#enums)
@@ -1003,6 +1007,66 @@ requestAccessFineLocationPermission() => Promise<PermissionState>
 
 ---
 
+### addListener('onEnabledChanged', ...)
+
+```typescript
+addListener(eventName: 'onEnabledChanged', listenerFunc: (result: BooleanResult) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                         |
+| ------------------ | ---------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'onEnabledChanged'</code>                                              |
+| **`listenerFunc`** | <code>(result: <a href="#booleanresult">BooleanResult</a>) =&gt; void</code> |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+---
+
+### addListener('bluetoothStateChange', ...)
+
+```typescript
+addListener(eventName: 'bluetoothStateChange', listenerFunc: (result: IsActiveResult) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                           |
+| ------------------ | ------------------------------------------------------------------------------ |
+| **`eventName`**    | <code>'bluetoothStateChange'</code>                                            |
+| **`listenerFunc`** | <code>(result: <a href="#isactiveresult">IsActiveResult</a>) =&gt; void</code> |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+---
+
+### addListener(string, ...)
+
+```typescript
+addListener(eventName: string, listenerFunc: (event: ReadResult) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                  |
+| ------------------ | --------------------------------------------------------------------- |
+| **`eventName`**    | <code>string</code>                                                   |
+| **`listenerFunc`** | <code>(event: <a href="#readresult">ReadResult</a>) =&gt; void</code> |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+---
+
+### addListener('onScanResult', ...)
+
+```typescript
+addListener(eventName: 'onScanResult', listenerFunc: (result: ScanResultInternal) => void) => PluginListenerHandle
+```
+
+| Param              | Type                                                                                                                   |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'onScanResult'</code>                                                                                            |
+| **`listenerFunc`** | <code>(result: <a href="#scanresultinternal">ScanResultInternal</a>&lt;<a href="#data">Data</a>&gt;) =&gt; void</code> |
+
+**Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+---
+
 ### Interfaces
 
 #### InitializeOptions
@@ -1222,6 +1286,43 @@ An event which takes place in the DOM.
 | ------------- | -------------------- |
 | **`capture`** | <code>boolean</code> |
 
+#### PluginListenerHandle
+
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+#### BooleanResult
+
+| Prop        | Type                 |
+| ----------- | -------------------- |
+| **`value`** | <code>boolean</code> |
+
+#### IsActiveResult
+
+| Prop           | Type                 |
+| -------------- | -------------------- |
+| **`isActive`** | <code>boolean</code> |
+
+#### ReadResult
+
+| Prop        | Type                                  | Description                                                |
+| ----------- | ------------------------------------- | ---------------------------------------------------------- |
+| **`value`** | <code><a href="#data">Data</a></code> | android, ios: string web: <a href="#dataview">DataView</a> |
+
+#### ScanResultInternal
+
+| Prop                   | Type                                            |
+| ---------------------- | ----------------------------------------------- |
+| **`device`**           | <code><a href="#bledevice">BleDevice</a></code> |
+| **`localName`**        | <code>string</code>                             |
+| **`rssi`**             | <code>number</code>                             |
+| **`txPower`**          | <code>number</code>                             |
+| **`manufacturerData`** | <code>{ [key: string]: T; }</code>              |
+| **`serviceData`**      | <code>{ [key: string]: T; }</code>              |
+| **`uuids`**            | <code>string[]</code>                           |
+| **`rawAdvertisement`** | <code>T</code>                                  |
+
 ### Type Aliases
 
 #### EventListenerOrEventListenerObject
@@ -1231,6 +1332,10 @@ An event which takes place in the DOM.
 #### PermissionState
 
 <code>"denied" | "granted" | "prompt"</code>
+
+#### Data
+
+<code><a href="#dataview">DataView</a> | string</code>
 
 ### Enums
 

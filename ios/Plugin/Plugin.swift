@@ -24,7 +24,7 @@ public class BluetoothLe: CAPPlugin {
 
     @objc func initialize(_ call: CAPPluginCall) {
         let withAlert = call.getBool("withAlert")
-        self.deviceManager = DeviceManager(self.bridge?.viewController, self.displayStrings, withAlert, {(success, message) -> Void in
+        self.deviceManager = DeviceManager(self.bridge?.viewController, self.displayStrings, withAlert, self, {(success, message) -> Void in
             if success {
                 call.resolve()
             } else {
@@ -34,9 +34,20 @@ public class BluetoothLe: CAPPlugin {
     }
     
     @objc public override func requestPermissions(_ call: CAPPluginCall) {
-        self.deviceManager = DeviceManager(self.bridge?.viewController, self.displayStrings, nil, {(success, message) -> Void in
+        self.deviceManager = DeviceManager(self.bridge?.viewController, self.displayStrings, nil, self, {(success, message) -> Void in
             if success {
                 let response = Permission.checkPermissions(self.deviceManager)
+                call.resolve(response)
+            } else {
+                call.reject(message)
+            }
+        })
+    }
+    
+    @objc func requestBluetoothPermission(_ call: CAPPluginCall) {
+        self.deviceManager = DeviceManager(self.bridge?.viewController, self.displayStrings, nil, self, {(success, message) -> Void in
+            if success {
+                let response = Permission.checkBluetoothPermission(self.deviceManager)
                 call.resolve(response)
             } else {
                 call.reject(message)
@@ -47,6 +58,16 @@ public class BluetoothLe: CAPPlugin {
     @objc public override func checkPermissions(_ call: CAPPluginCall) {
         let status = Permission.checkPermissions(self.deviceManager)
         call.resolve(status)
+    }
+    
+    @objc func checkBluetoothPermission(_ call: CAPPluginCall) {
+        let status = Permission.checkBluetoothPermission(self.deviceManager)
+        call.resolve(status)
+    }
+    
+    @objc func hasBluetoothPermission(_ call: CAPPluginCall) {
+        let hasPerm = Permission.hasBluetoothPermission()
+        call.resolve(["hasPermission": hasPerm])
     }
     
     @objc func hasPermissions(_ call: CAPPluginCall) {
@@ -251,7 +272,7 @@ public class BluetoothLe: CAPPlugin {
         })
         self.deviceManager?.connect(device, timeout, {(success, message) -> Void in
             if success {
-                print("Connected to peripheral. Waiting for service discovery.")
+//                print("Connected to peripheral. Waiting for service discovery.")
             } else {
                 call.reject(message)
             }

@@ -37,4 +37,8 @@ CAP_PLUGIN(BluetoothLe, "BluetoothLe",
            CAP_PLUGIN_METHOD(checkPermissions, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(hasPermissions, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(requestPermissions, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(requestBluetoothPermission, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(checkBluetoothPermission, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(hasBluetoothPermission, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(removeAllListeners, CAPPluginReturnPromise);
 )

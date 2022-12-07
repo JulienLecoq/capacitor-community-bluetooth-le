@@ -15,6 +15,9 @@ class BleClientClass {
     disableQueue() {
         this.queue = getQueue(false);
     }
+    addListener(eventName, listenerFunc) {
+        return BluetoothLe.addListener(eventName, listenerFunc);
+    }
     async hasBluetoothPermission() {
         const permissions = await this.queue(async () => {
             const result = await BluetoothLe.hasBluetoothPermission();

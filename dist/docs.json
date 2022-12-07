@@ -986,6 +986,102 @@
           "PermissionState"
         ],
         "slug": "requestaccessfinelocationpermission"
+      },
+      {
+        "name": "addListener",
+        "signature": "(eventName: 'onEnabledChanged', listenerFunc: (result: BooleanResult) => void) => PluginListenerHandle",
+        "parameters": [
+          {
+            "name": "eventName",
+            "docs": "",
+            "type": "'onEnabledChanged'"
+          },
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "(result: BooleanResult) => void"
+          }
+        ],
+        "returns": "PluginListenerHandle",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "PluginListenerHandle",
+          "BooleanResult"
+        ],
+        "slug": "addlisteneronenabledchanged"
+      },
+      {
+        "name": "addListener",
+        "signature": "(eventName: 'bluetoothStateChange', listenerFunc: (result: IsActiveResult) => void) => PluginListenerHandle",
+        "parameters": [
+          {
+            "name": "eventName",
+            "docs": "",
+            "type": "'bluetoothStateChange'"
+          },
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "(result: IsActiveResult) => void"
+          }
+        ],
+        "returns": "PluginListenerHandle",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "PluginListenerHandle",
+          "IsActiveResult"
+        ],
+        "slug": "addlistenerbluetoothstatechange"
+      },
+      {
+        "name": "addListener",
+        "signature": "(eventName: string, listenerFunc: (event: ReadResult) => void) => PluginListenerHandle",
+        "parameters": [
+          {
+            "name": "eventName",
+            "docs": "",
+            "type": "string"
+          },
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "(event: ReadResult) => void"
+          }
+        ],
+        "returns": "PluginListenerHandle",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "PluginListenerHandle",
+          "ReadResult"
+        ],
+        "slug": "addlistenerstring"
+      },
+      {
+        "name": "addListener",
+        "signature": "(eventName: 'onScanResult', listenerFunc: (result: ScanResultInternal) => void) => PluginListenerHandle",
+        "parameters": [
+          {
+            "name": "eventName",
+            "docs": "",
+            "type": "'onScanResult'"
+          },
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "(result: ScanResultInternal<Data>) => void"
+          }
+        ],
+        "returns": "PluginListenerHandle",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "PluginListenerHandle",
+          "ScanResultInternal"
+        ],
+        "slug": "addlisteneronscanresult"
       }
     ],
     "properties": []
@@ -2545,6 +2641,145 @@
           "type": "boolean | undefined"
         }
       ]
+    },
+    {
+      "name": "PluginListenerHandle",
+      "slug": "pluginlistenerhandle",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "remove",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "() => Promise<void>"
+        }
+      ]
+    },
+    {
+      "name": "BooleanResult",
+      "slug": "booleanresult",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "value",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "IsActiveResult",
+      "slug": "isactiveresult",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "isActive",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "ReadResult",
+      "slug": "readresult",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "value",
+          "tags": [],
+          "docs": "android, ios: string\nweb: DataView",
+          "complexTypes": [
+            "Data"
+          ],
+          "type": "Data"
+        }
+      ]
+    },
+    {
+      "name": "ScanResultInternal",
+      "slug": "scanresultinternal",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "device",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "BleDevice"
+          ],
+          "type": "BleDevice"
+        },
+        {
+          "name": "localName",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string | undefined"
+        },
+        {
+          "name": "rssi",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number | undefined"
+        },
+        {
+          "name": "txPower",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number | undefined"
+        },
+        {
+          "name": "manufacturerData",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "T"
+          ],
+          "type": "{ [key: string]: T; } | undefined"
+        },
+        {
+          "name": "serviceData",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "T"
+          ],
+          "type": "{ [key: string]: T; } | undefined"
+        },
+        {
+          "name": "uuids",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string[] | undefined"
+        },
+        {
+          "name": "rawAdvertisement",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "T"
+          ],
+          "type": "T"
+        }
+      ]
     }
   ],
   "enums": [
@@ -2608,6 +2843,23 @@
         },
         {
           "text": "\"prompt\"",
+          "complexTypes": []
+        }
+      ]
+    },
+    {
+      "name": "Data",
+      "slug": "data",
+      "docs": "",
+      "types": [
+        {
+          "text": "DataView",
+          "complexTypes": [
+            "DataView"
+          ]
+        },
+        {
+          "text": "string",
           "complexTypes": []
         }
       ]

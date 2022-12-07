@@ -9,30 +9,39 @@ enum Permission {
         case denied = "denied"
     }
     
-    static func managerAuthorizationToJsonStatus(_ authorization: CBManagerAuthorization) -> [String: Permission.State.RawValue] {
-        var status = Permission.State.denied.rawValue
-        
+    static func authorizationToStateString(_ authorization: CBManagerAuthorization) -> String {
         switch authorization {
         case .notDetermined:
-            status = Permission.State.prompt.rawValue
+            return Permission.State.prompt.rawValue
         case .restricted, .denied:
-            status = Permission.State.denied.rawValue
+            return Permission.State.denied.rawValue
         case .allowedAlways:
-            status = Permission.State.granted.rawValue
+            return Permission.State.granted.rawValue
         @unknown default:
-            status = Permission.State.denied.rawValue
+            return Permission.State.denied.rawValue
         }
-        
+    }
+
+    /**
+     * Return true if the user has granted the bluetooth permission.
+     */
+    static func hasPermissions() -> Bool {
+        return hasBluetoothPermission()
+    }
+
+    /**
+     * Return the bluetooth permission status.
+     */
+    static func checkPermissions(_ deviceManager: DeviceManager?) -> [String: Permission.State.RawValue] {
+        let status = checkBluetoothPermissionStateString(deviceManager)
         return [
+            "accessFineLocation": status,
             "bluetoothScan": status,
             "bluetoothConnect": status,
         ]
     }
     
-    /**
-     * Return true if the user has granted the bluetooth permission.
-     */
-    static func hasPermissions() -> Bool {
+    static func hasBluetoothPermission() -> Bool {
         if #available(iOS 13.1, *) {
             // iOS greather than 13.1
             return CBCentralManager.authorization == .allowedAlways
@@ -45,27 +54,25 @@ enum Permission {
         // Before iOS 13, Bluetooth permissions are not required
         return true
     }
-
-    /**
-     * Return the bluetooth permission status.
-     */
-    static func checkPermissions(_ deviceManager: DeviceManager?) -> [String: Permission.State.RawValue] {
-        var status: [String: Permission.State.RawValue]
-        
+    
+    static func checkBluetoothPermissionStateString(_ deviceManager: DeviceManager?) -> String {
         if #available(iOS 13.1, *) {
             // iOS greather than 13.1
-            status = managerAuthorizationToJsonStatus(CBCentralManager.authorization)
-        } else
-        if #available(iOS 13.0, *) {
+            return authorizationToStateString(CBCentralManager.authorization)
+        } else if #available(iOS 13.0, *) {
             // iOS lower than 13.1"
             let manager = deviceManager?.centralManager ?? CBCentralManager(delegate: nil, queue: nil, options: ["CBCentralManagerOptionShowPowerAlertKey": false])
-            status = managerAuthorizationToJsonStatus(manager.authorization)
+            return authorizationToStateString(manager.authorization)
         } else {
             // iOS lower than 13.0
             // Before iOS 13, Bluetooth permissions are not required
-            status = managerAuthorizationToJsonStatus(CBManagerAuthorization.allowedAlways)
+            return authorizationToStateString(CBManagerAuthorization.allowedAlways)
         }
-        
-        return status
+    }
+    
+    static func checkBluetoothPermission(_ deviceManager: DeviceManager?) -> [String: Permission.State.RawValue] {
+        return [
+            "value": checkBluetoothPermissionStateString(deviceManager),
+        ]
     }
 }

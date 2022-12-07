@@ -15,6 +15,8 @@ import type {
   TimeoutOptions,
   PermissionStatus,
   PermissionState,
+  IsActiveResult,
+  BooleanResult,
 } from './definitions';
 import { BluetoothLe } from './plugin';
 import { getQueue } from './queue';
@@ -312,6 +314,10 @@ export interface BleClientInterface {
   requestBluetoothScanPermission(): Promise<PermissionState>;
   requestAccessFineLocationPermission(): Promise<PermissionState>;
 
+  addListener(eventName: 'onEnabledChanged', listenerFunc: (result: BooleanResult) => void): PluginListenerHandle;
+  addListener(eventName: 'bluetoothStateChange', listenerFunc: (result: IsActiveResult) => void): PluginListenerHandle;
+  addListener(eventName: string, listenerFunc: (event: ReadResult) => void): PluginListenerHandle;
+  addListener(eventName: 'onScanResult', listenerFunc: (result: ScanResultInternal) => void): PluginListenerHandle;
 }
 
 class BleClientClass implements BleClientInterface {
@@ -326,6 +332,14 @@ class BleClientClass implements BleClientInterface {
 
   disableQueue() {
     this.queue = getQueue(false);
+  }
+
+  addListener(eventName: 'onEnabledChanged', listenerFunc: (result: BooleanResult) => void): PluginListenerHandle;
+  addListener(eventName: 'bluetoothStateChange', listenerFunc: (result: IsActiveResult) => void): PluginListenerHandle;
+  addListener(eventName: string, listenerFunc: (event: ReadResult) => void): PluginListenerHandle;
+  addListener(eventName: 'onScanResult', listenerFunc: (result: ScanResultInternal<Data>) => void): PluginListenerHandle
+  addListener(eventName: unknown, listenerFunc: unknown): PluginListenerHandle {
+    return BluetoothLe.addListener(eventName as any, listenerFunc as any)
   }
 
   async hasBluetoothPermission(): Promise<boolean> {
