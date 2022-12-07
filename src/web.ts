@@ -23,12 +23,15 @@ import type {
   ScanResultInternal,
   WriteOptions,
   WriteDescriptorOptions,
-  HasPermissionStatus,
+  HasPermissionsResult,
   PermissionStatus,
+  PermissionStateResult,
+  HasPermissonResult,
 } from './definitions';
 import { runWithTimeout } from './timeout';
 
 export class BluetoothLeWeb extends WebPlugin implements BluetoothLePlugin {
+  
   private deviceMap = new Map<string, BluetoothDevice>();
   private discoveredDevices = new Map<string, boolean>();
   private scan: BluetoothLEScan | null = null;
@@ -46,19 +49,71 @@ export class BluetoothLeWeb extends WebPlugin implements BluetoothLePlugin {
   }
 
   isInitialized(): Promise<BooleanResult> {  
-    throw this.unimplemented('Method not implemented.')
+    throw this.unimplemented('Method not implemented.');
   }
 
-  hasPermissions(): Promise<HasPermissionStatus> {    
-    throw this.unimplemented('Method not implemented.')
+  hasPermissions(): Promise<HasPermissionsResult> {    
+    throw this.unimplemented('Method not implemented.');
   }
   
   checkPermissions(): Promise<PermissionStatus> {
-    throw this.unimplemented('Method not implemented.')
+    throw this.unimplemented('Method not implemented.');
   }
 
   requestPermissions(): Promise<PermissionStatus> {
-    throw this.unimplemented('Method not implemented.')
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  hasBluetoothPermission(): Promise<HasPermissonResult> {
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  hasBluetoothScanPermission(): Promise<HasPermissonResult> {
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  hasBluetoothConnectPermission(): Promise<HasPermissonResult> {
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  hasAccessFineLocationPermission(): Promise<HasPermissonResult> {
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  checkBluetoothPermission(): Promise<PermissionStateResult> {
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  checkBluetoothScanPermission(): Promise<PermissionStateResult> {
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  checkBluetoothConnectPermission(): Promise<PermissionStateResult> {
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  checkAccessFineLocationPermission(): Promise<PermissionStateResult> {
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  requestBluetoothPermission(): Promise<PermissionStateResult> {
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  requestBluetoothConnectPermission(): Promise<PermissionStateResult> {
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  requestBluetoothScanPermission(): Promise<PermissionStateResult> {
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  requestAccessFineLocationPermission(): Promise<PermissionStateResult> {
+    throw this.unimplemented('Method not implemented.');
+  }
+
+  enable(): Promise<BooleanResult> {
+    throw this.unimplemented('Method not implemented.');
   }
 
   async isEnabled(): Promise<BooleanResult> {
@@ -66,7 +121,7 @@ export class BluetoothLeWeb extends WebPlugin implements BluetoothLePlugin {
     return { value: true };
   }
 
-  async enable(): Promise<void> {
+  async forceEnable(): Promise<void> {
     throw this.unavailable('enable is not available on web.');
   }
 

@@ -50,7 +50,7 @@ Below is an index of all the methods available.
 
 - [`initialize(...)`](#initialize)
 - [`isEnabled()`](#isenabled)
-- [`enable()`](#enable)
+- [`forceEnable()`](#forceenable)
 - [`disable()`](#disable)
 - [`startEnabledNotifications(...)`](#startenablednotifications)
 - [`stopEnabledNotifications()`](#stopenablednotifications)
@@ -81,6 +81,19 @@ Below is an index of all the methods available.
 - [`hasPermissions()`](#haspermissions)
 - [`checkPermissions()`](#checkpermissions)
 - [`requestPermissions()`](#requestpermissions)
+- [`enable()`](#enable)
+- [`hasBluetoothScanPermission()`](#hasbluetoothscanpermission)
+- [`hasBluetoothScanPermission()`](#hasbluetoothscanpermission)
+- [`hasBluetoothConnectPermission()`](#hasbluetoothconnectpermission)
+- [`hasAccessFineLocationPermission()`](#hasaccessfinelocationpermission)
+- [`checkBluetoothPermission()`](#checkbluetoothpermission)
+- [`checkBluetoothScanPermission()`](#checkbluetoothscanpermission)
+- [`checkBluetoothConnectPermission()`](#checkbluetoothconnectpermission)
+- [`checkAccessFineLocationPermission()`](#checkaccessfinelocationpermission)
+- [`requestBluetoothPermission()`](#requestbluetoothpermission)
+- [`requestBluetoothConnectPermission()`](#requestbluetoothconnectpermission)
+- [`requestBluetoothScanPermission()`](#requestbluetoothscanpermission)
+- [`requestAccessFineLocationPermission()`](#requestaccessfinelocationpermission)
 - [Interfaces](#interfaces)
 - [Type Aliases](#type-aliases)
 - [Enums](#enums)
@@ -391,10 +404,10 @@ Always returns `true` on **web**.
 
 ---
 
-### enable()
+### forceEnable()
 
 ```typescript
-enable() => Promise<void>
+forceEnable() => Promise<void>
 ```
 
 Enable Bluetooth.
@@ -857,6 +870,136 @@ Request the permissions.
 Not available on **web**.
 
 **Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
+
+---
+
+### enable()
+
+```typescript
+enable() => Promise<boolean>
+```
+
+**Returns:** <code>Promise&lt;boolean&gt;</code>
+
+---
+
+### hasBluetoothScanPermission()
+
+```typescript
+hasBluetoothScanPermission() => Promise<boolean>
+```
+
+**Returns:** <code>Promise&lt;boolean&gt;</code>
+
+---
+
+### hasBluetoothScanPermission()
+
+```typescript
+hasBluetoothScanPermission() => Promise<boolean>
+```
+
+**Returns:** <code>Promise&lt;boolean&gt;</code>
+
+---
+
+### hasBluetoothConnectPermission()
+
+```typescript
+hasBluetoothConnectPermission() => Promise<boolean>
+```
+
+**Returns:** <code>Promise&lt;boolean&gt;</code>
+
+---
+
+### hasAccessFineLocationPermission()
+
+```typescript
+hasAccessFineLocationPermission() => Promise<boolean>
+```
+
+**Returns:** <code>Promise&lt;boolean&gt;</code>
+
+---
+
+### checkBluetoothPermission()
+
+```typescript
+checkBluetoothPermission() => Promise<PermissionState>
+```
+
+**Returns:** <code>Promise&lt;<a href="#permissionstate">PermissionState</a>&gt;</code>
+
+---
+
+### checkBluetoothScanPermission()
+
+```typescript
+checkBluetoothScanPermission() => Promise<PermissionState>
+```
+
+**Returns:** <code>Promise&lt;<a href="#permissionstate">PermissionState</a>&gt;</code>
+
+---
+
+### checkBluetoothConnectPermission()
+
+```typescript
+checkBluetoothConnectPermission() => Promise<PermissionState>
+```
+
+**Returns:** <code>Promise&lt;<a href="#permissionstate">PermissionState</a>&gt;</code>
+
+---
+
+### checkAccessFineLocationPermission()
+
+```typescript
+checkAccessFineLocationPermission() => Promise<PermissionState>
+```
+
+**Returns:** <code>Promise&lt;<a href="#permissionstate">PermissionState</a>&gt;</code>
+
+---
+
+### requestBluetoothPermission()
+
+```typescript
+requestBluetoothPermission() => Promise<PermissionState>
+```
+
+**Returns:** <code>Promise&lt;<a href="#permissionstate">PermissionState</a>&gt;</code>
+
+---
+
+### requestBluetoothConnectPermission()
+
+```typescript
+requestBluetoothConnectPermission() => Promise<PermissionState>
+```
+
+**Returns:** <code>Promise&lt;<a href="#permissionstate">PermissionState</a>&gt;</code>
+
+---
+
+### requestBluetoothScanPermission()
+
+```typescript
+requestBluetoothScanPermission() => Promise<PermissionState>
+```
+
+**Returns:** <code>Promise&lt;<a href="#permissionstate">PermissionState</a>&gt;</code>
+
+---
+
+### requestAccessFineLocationPermission()
+
+```typescript
+requestAccessFineLocationPermission() => Promise<PermissionState>
+```
+
+**Returns:** <code>Promise&lt;<a href="#permissionstate">PermissionState</a>&gt;</code>
 
 ---
 

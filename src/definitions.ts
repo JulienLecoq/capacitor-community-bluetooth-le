@@ -245,12 +245,21 @@ export interface ScanResult {
   rawAdvertisement?: DataView;
 }
 
-export interface HasPermissionStatus {
+export interface HasPermissionsResult {
     /**
      * Bool indicating if all the permissions of the bluetooth module have been granted.
      */
     hasPermissions: boolean
 }
+
+export interface HasPermissonResult {
+  /**
+   * Bool indicating if all the permissions of the bluetooth module have been granted.
+   */
+  hasPermission: boolean
+}
+
+export type PermissionState = "denied" | "granted" | "prompt" | "prompt-with-rationale"
 
 export interface PermissionStatus {
     /**
@@ -261,12 +270,20 @@ export interface PermissionStatus {
      * Connect permission state.
      */
     bluetoothConnect: PermissionState,
+    /**
+     * Access fine location permission state.
+     */
+    accessFineLocation: PermissionState,
+}
+
+export interface PermissionStateResult {
+  value: PermissionState
 }
 
 export interface BluetoothLePlugin {
   initialize(options?: InitializeOptions): Promise<void>;
   isEnabled(): Promise<BooleanResult>;
-  enable(): Promise<void>;
+  forceEnable(): Promise<void>;
   disable(): Promise<void>;
   startEnabledNotifications(): Promise<void>;
   stopEnabledNotifications(): Promise<void>;
@@ -296,8 +313,26 @@ export interface BluetoothLePlugin {
   writeDescriptor(options: WriteDescriptorOptions & TimeoutOptions): Promise<void>;
   startNotifications(options: ReadOptions): Promise<void>;
   stopNotifications(options: ReadOptions): Promise<void>;
-  isInitialized(): Promise<BooleanResult>
-  hasPermissions(): Promise<HasPermissionStatus>
-  checkPermissions(): Promise<PermissionStatus>
-  requestPermissions(): Promise<PermissionStatus>
+
+  enable(): Promise<BooleanResult>;
+  isInitialized(): Promise<BooleanResult>;
+
+  hasPermissions(): Promise<HasPermissionsResult>;
+  checkPermissions(): Promise<PermissionStatus>;
+  requestPermissions(): Promise<PermissionStatus>;
+  
+  hasBluetoothPermission(): Promise<HasPermissonResult>
+  hasBluetoothScanPermission(): Promise<HasPermissonResult>
+  hasBluetoothConnectPermission(): Promise<HasPermissonResult>
+  hasAccessFineLocationPermission(): Promise<HasPermissonResult>
+
+  checkBluetoothPermission(): Promise<PermissionStateResult>;
+  checkBluetoothScanPermission(): Promise<PermissionStateResult>;
+  checkBluetoothConnectPermission(): Promise<PermissionStateResult>;
+  checkAccessFineLocationPermission(): Promise<PermissionStateResult>;
+
+  requestBluetoothPermission(): Promise<PermissionStateResult>;
+  requestBluetoothConnectPermission(): Promise<PermissionStateResult>;
+  requestBluetoothScanPermission(): Promise<PermissionStateResult>;
+  requestAccessFineLocationPermission(): Promise<PermissionStateResult>;
 }

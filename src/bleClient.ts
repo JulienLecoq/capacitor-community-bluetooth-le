@@ -13,7 +13,8 @@ import type {
   ScanResult,
   ScanResultInternal,
   TimeoutOptions,
-  PermissionStatus
+  PermissionStatus,
+  PermissionState,
 } from './definitions';
 import { BluetoothLe } from './plugin';
 import { getQueue } from './queue';
@@ -37,7 +38,7 @@ export interface BleClientInterface {
    * Enable Bluetooth.
    * Only available on **Android**.
    */
-  enable(): Promise<void>;
+  forceEnable(): Promise<void>;
 
   /**
    * Disable Bluetooth.
@@ -293,9 +294,28 @@ export interface BleClientInterface {
    * Not available on **web**.
    */
   requestPermissions(): Promise<PermissionStatus>;
+
+  enable(): Promise<boolean>;
+
+  hasBluetoothScanPermission(): Promise<boolean>
+  hasBluetoothScanPermission(): Promise<boolean>
+  hasBluetoothConnectPermission(): Promise<boolean>
+  hasAccessFineLocationPermission(): Promise<boolean>
+
+  checkBluetoothPermission(): Promise<PermissionState>;
+  checkBluetoothScanPermission(): Promise<PermissionState>;
+  checkBluetoothConnectPermission(): Promise<PermissionState>;
+  checkAccessFineLocationPermission(): Promise<PermissionState>;
+  
+  requestBluetoothPermission(): Promise<PermissionState>;
+  requestBluetoothConnectPermission(): Promise<PermissionState>;
+  requestBluetoothScanPermission(): Promise<PermissionState>;
+  requestAccessFineLocationPermission(): Promise<PermissionState>;
+
 }
 
 class BleClientClass implements BleClientInterface {
+
   private scanListener: PluginListenerHandle | null = null;
   private eventListeners = new Map<string, PluginListenerHandle>();
   private queue = getQueue(true);
@@ -308,38 +328,146 @@ class BleClientClass implements BleClientInterface {
     this.queue = getQueue(false);
   }
 
-  async requestPermissions(): Promise<PermissionStatus> {
-    const permissions = await this.queue(() => {
-        return BluetoothLe.requestPermissions()
+  async hasBluetoothPermission(): Promise<boolean> {
+    const permissions = await this.queue(async () => {
+      const result = await BluetoothLe.hasBluetoothPermission();
+      return result.hasPermission;
     })
 
-    return permissions
+    return permissions;
+  }
+
+  async hasBluetoothScanPermission(): Promise<boolean> {
+    const permissions = await this.queue(async () => {
+      const result = await BluetoothLe.hasBluetoothScanPermission();
+      return result.hasPermission;
+    })
+
+    return permissions;
+  }
+
+  async hasBluetoothConnectPermission(): Promise<boolean> {
+    const permissions = await this.queue(async () => {
+      const result = await BluetoothLe.hasBluetoothConnectPermission();
+      return result.hasPermission;
+    })
+
+    return permissions;
+  }
+
+  async hasAccessFineLocationPermission(): Promise<boolean> {
+    const permissions = await this.queue(async () => {
+      const result = await BluetoothLe.hasAccessFineLocationPermission();
+      return result.hasPermission;
+    })
+
+    return permissions;
+  }
+
+  async requestBluetoothPermission(): Promise<PermissionState> {
+    const permissions = await this.queue(async () => {
+        const result = await BluetoothLe.requestBluetoothPermission();
+        return result.value;
+    })
+
+    return permissions;
+  }
+
+  async requestBluetoothConnectPermission(): Promise<PermissionState> {
+    const permissions = await this.queue(async () => {
+        const result = await BluetoothLe.requestBluetoothConnectPermission();
+        return result.value;
+    })
+
+    return permissions;
+  }
+
+  async requestBluetoothScanPermission(): Promise<PermissionState> {
+    const permissions = await this.queue(async () => {
+        const result = await BluetoothLe.requestBluetoothScanPermission();
+        return result.value;
+    })
+
+    return permissions;
+  }
+
+  async requestAccessFineLocationPermission(): Promise<PermissionState> {
+    const permissions = await this.queue(async () => {
+        const result = await BluetoothLe.requestAccessFineLocationPermission();
+        return result.value;
+    })
+
+    return permissions;
+  }
+
+  async checkBluetoothPermission(): Promise<PermissionState> {
+    const permissions = await this.queue(async () => {
+        const result = await BluetoothLe.checkBluetoothPermission();
+        return result.value;
+    })
+
+    return permissions;
+  }
+
+  async checkAccessFineLocationPermission(): Promise<PermissionState> {
+    const permissions = await this.queue(async () => {
+        const result = await BluetoothLe.checkAccessFineLocationPermission();
+        return result.value;
+    })
+
+    return permissions;
+  }
+
+  async checkBluetoothConnectPermission(): Promise<PermissionState> {
+    const permissions = await this.queue(async () => {
+        const result = await BluetoothLe.checkBluetoothConnectPermission();
+        return result.value;
+    })
+
+    return permissions;
+  }
+
+  async checkBluetoothScanPermission(): Promise<PermissionState> {
+    const permissions = await this.queue(async () => {
+        const result = await BluetoothLe.checkBluetoothScanPermission();
+        return result.value;
+    })
+
+    return permissions;
+  }
+
+  async requestPermissions(): Promise<PermissionStatus> {
+    const permissions = await this.queue(() => {
+        return BluetoothLe.requestPermissions();
+    })
+
+    return permissions;
   }
 
   async checkPermissions(): Promise<PermissionStatus> {
     const permissions = await this.queue(() => {
-        return BluetoothLe.checkPermissions()
+        return BluetoothLe.checkPermissions();
     })
 
-    return permissions
+    return permissions;
   }
 
   async hasPermissions(): Promise<boolean> {
     const permissions = await this.queue(async () => {
-        const result = await BluetoothLe.hasPermissions()
-        return result.hasPermissions
+        const result = await BluetoothLe.hasPermissions();
+        return result.hasPermissions;
     })
 
-    return permissions
+    return permissions;
   }
 
   async isInitialized(): Promise<boolean> {
     const initialized = await this.queue(async () => {
-        const result = await BluetoothLe.isInitialized()
-        return result.value
+        const result = await BluetoothLe.isInitialized();
+        return result.value;
     })
 
-    return initialized
+    return initialized;
   }
 
   async initialize(options?: InitializeOptions): Promise<void> {
@@ -365,9 +493,18 @@ class BleClientClass implements BleClientInterface {
     return enabled;
   }
 
-  async enable(): Promise<void> {
+  async enable(): Promise<boolean> {
+    const enabled = await this.queue(async () => {
+      const result = await BluetoothLe.enable();
+      return result.value;
+    });
+
+    return enabled
+  }
+
+  async forceEnable(): Promise<void> {
     await this.queue(async () => {
-      await BluetoothLe.enable();
+      await BluetoothLe.forceEnable();
     });
   }
 
