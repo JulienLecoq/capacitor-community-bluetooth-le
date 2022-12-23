@@ -146,12 +146,22 @@ class BluetoothLe : Plugin() {
 
     @PluginMethod
     fun checkBluetoothScanPermission(call: PluginCall) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            call.resolve(toValueResult(PermissionState.GRANTED.toString()))
+            return
+        }
+
         val res = getPermissionState(PermissionManager.BLUETOOTH_SCAN_ALIAS).toString()
         call.resolve(toValueResult(res))
     }
 
     @PluginMethod
     fun checkBluetoothConnectPermission(call: PluginCall) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            call.resolve(toValueResult(PermissionState.GRANTED.toString()))
+            return
+        }
+
         val res = getPermissionState(PermissionManager.BLUETOOTH_CONNECT_ALIAS).toString()
         call.resolve(toValueResult(res))
     }
