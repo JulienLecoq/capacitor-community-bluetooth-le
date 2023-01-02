@@ -334,9 +334,9 @@ class BleClientClass implements BleClientInterface {
     this.queue = getQueue(false);
   }
 
-  addListener(eventName: 'onEnabledChanged', listenerFunc: (result: BooleanResult) => void): PluginListenerHandle;
-  addListener(eventName: 'bluetoothStateChange', listenerFunc: (result: IsActiveResult) => void): PluginListenerHandle;
-  addListener(eventName: string, listenerFunc: (event: ReadResult) => void): PluginListenerHandle;
+  addListener(eventName: 'onEnabledChanged', listenerFunc: (result: BooleanResult) => void): PluginListenerHandle
+  addListener(eventName: 'bluetoothStateChange', listenerFunc: (result: IsActiveResult) => void): PluginListenerHandle
+  addListener(eventName: string, listenerFunc: (event: ReadResult) => void): PluginListenerHandle
   addListener(eventName: 'onScanResult', listenerFunc: (result: ScanResultInternal<Data>) => void): PluginListenerHandle
   addListener(eventName: unknown, listenerFunc: unknown): PluginListenerHandle {
     return BluetoothLe.addListener(eventName as any, listenerFunc as any)
