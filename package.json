@@ -28,7 +28,8 @@
     "version:dev": "npm version --no-git-tag-version $(git describe)",
     "release": "standard-version",
     "release:minor": "standard-version -r minor",
-    "release:major": "standard-version -r major"
+    "release:major": "standard-version -r major",
+    "prepare": "npm run build"
   },
   "author": "pwespi",
   "license": "MIT",
